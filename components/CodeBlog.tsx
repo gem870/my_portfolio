@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { motion, useMotionValue, animate } from "framer-motion";
+import axios from "axios"
 import DOMPurify from "dompurify";
 import Link from "next/link";
 import Image from "next/image";
 
 const MONGODB_URL = process.env.NEXT_PUBLIC_BACKEND_BLOG_URL as string;
+const authToken = process.env.NEXT_PUBLIC_VERCEL_TOKEN as string
 
 const COLORS_TOP = ["#13FFAA", "#1E67C6", "#CE84CF", "#DD335C"];
 
@@ -27,10 +29,23 @@ const CodeBlog = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await fetch(`${MONGODB_URL}/api/blogs`);
-        if (!response.ok) throw new Error("Failed to fetch");
+        // const response = await fetch(`${MONGODB_URL}/api/blogs`);
+        const response = await axios.get(
+          "https://emmanuelchibuikevictor-il5uzto7w-gem870s-projects.vercel.app/api/blogs",
+          {
+            headers: {
+              "Accept": "application/json",
+              "Authorization": `Bearer ${authToken}`,
+            },
+            // if your API requires cookies or credentials, enable this:
+            withCredentials: true,
+          }
+        );
+        
+        
+        if (!response.data) throw new Error("Failed to fetch");
 
-        const data = await response.json();
+        const data = await response.data;
         console.log("API Response:", data);
 
         setProjects(data.projects || data);
