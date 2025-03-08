@@ -10,12 +10,26 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
+// Function to set CORS headers
+function setCorsHeaders(response: NextResponse) {
+  response.headers.set("Access-Control-Allow-Origin", "*");
+  response.headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  response.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  return response;
+}
+
+// **Handle CORS Preflight Requests**
+export function OPTIONS() {
+  return setCorsHeaders(new NextResponse(null, { status: 204 }));
+}
+
 // Handle GET request to fetch all blogs
 export async function GET() {
   try {
     await connectToDatabase();
     const blogs = await Blog.find({});
-    return NextResponse.json(blogs, { status: 200 });
+    const response = NextResponse.json(blogs, { status: 200 });
+    return setCorsHeaders(response);
   } catch (error) {
     console.error("Error fetching blogs:", error);
     return NextResponse.json({ message: "Error fetching blogs" }, { status: 500 });
@@ -41,7 +55,7 @@ export async function POST(req: NextRequest) {
     let filePath = "";
     if (file) {
       const fileBuffer = Buffer.from(await file.arrayBuffer());
-      const fileName = `${Date.now()}-${file.name.replace(/\s+/g, "_")}`; // Sanitize file name
+      const fileName = `${Date.now()}-${file.name.replace(/\s+/g, "_")}`;
       filePath = `/uploads/${fileName}`;
       fs.writeFileSync(path.join(uploadDir, fileName), fileBuffer);
     }
@@ -58,7 +72,8 @@ export async function POST(req: NextRequest) {
 
     await newBlog.save();
 
-    return NextResponse.json(newBlog, { status: 201 });
+    const response = NextResponse.json(newBlog, { status: 201 });
+    return setCorsHeaders(response);
   } catch (error) {
     console.error("Error creating blog post:", error);
     return NextResponse.json({ message: "Error creating blog post" }, { status: 500 });

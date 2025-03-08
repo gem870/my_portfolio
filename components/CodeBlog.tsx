@@ -2,13 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { motion, useMotionValue, animate } from "framer-motion";
-import axios from "axios"
 import DOMPurify from "dompurify";
 import Link from "next/link";
 import Image from "next/image";
 
-const MONGODB_URL = process.env.NEXT_PUBLIC_BACKEND_BLOG_URL as string;
-const authToken = process.env.NEXT_PUBLIC_VERCEL_TOKEN as string
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_BLOG_URL as string;
 
 const COLORS_TOP = ["#13FFAA", "#1E67C6", "#CE84CF", "#DD335C"];
 
@@ -28,31 +26,29 @@ const CodeBlog = () => {
 
   useEffect(() => {
     const fetchProjects = async () => {
-      try {
-        // const response = await fetch(`${MONGODB_URL}/api/blogs`);
-        const response = await axios.get(
-          "https://emmanuelchibuikevictor-il5uzto7w-gem870s-projects.vercel.app/api/blogs",
-          {
-            headers: {
-              "Accept": "application/json",
-              "Authorization": `Bearer ${authToken}`,
-            },
-            // if your API requires cookies or credentials, enable this:
-            withCredentials: true,
-          }
-        );
-        
-        
-        if (!response.data) throw new Error("Failed to fetch");
+      if (!BACKEND_URL) {
+        console.error("❌ Backend URL is not defined. Check your .env.local file.");
+        return;
+      }
 
-        const data = await response.data;
-        console.log("API Response:", data);
+      try {
+        console.log("📡 Fetching data from:", `${BACKEND_URL}/api/blogs`);
+        const response = await fetch(`${BACKEND_URL}/api/blogs`);
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Failed to fetch: ${response.status} - ${errorText}`);
+        }
+
+        const data = await response.json();
+        console.log("✅ API Response:", data);
 
         setProjects(data.projects || data);
       } catch (error) {
-        console.error("Error fetching projects:", error);
+        console.error("❌ Error fetching projects:", error);
       }
     };
+
     fetchProjects();
   }, []);
 
@@ -78,7 +74,7 @@ const CodeBlog = () => {
   }, [color, borderColor]);
 
   const isVideo = (url: string) => /\.(mp4|webm|ogg)$/i.test(url);
-  const getMediaUrl = (file: string | undefined) => (file ? `${MONGODB_URL}${file}` : "");
+  const getMediaUrl = (file: string | undefined) => (file ? `${BACKEND_URL}${file}` : "");
 
   return (
     <motion.section
@@ -166,8 +162,8 @@ const CodeBlog = () => {
                     return (
                       <div>
                         <div className="flex items-center justify-center text-gray-500 shadow-lg rounded-md p-4">
-                        No media available for this blog.
-                      </div>
+                          No media available for this blog.
+                        </div>
                       </div>
                     );
                   }
@@ -177,19 +173,19 @@ const CodeBlog = () => {
                       src={mediaUrl}
                       controls
                       className="rounded-md shadow-lg transition-opacity duration-500 w-full h-auto"
-                      onError={(e) => console.error("Video failed to load", e)}
+                      onError={(e) => console.error("❌ Video failed to load:", e)}
                     />
                   ) : (
                     <div>
                       <Image
-                      src={mediaUrl}
-                      alt={projects.find((p) => p._id === selectedProject)?.title || "Project Image"}
-                      className="rounded-md shadow-lg transition-opacity duration-500"
-                      width={700}
-                      height={700}
-                      priority
-                      onError={(e) => console.error("Image failed to load", e)}
-                    />
+                        src={mediaUrl}
+                        alt={projects.find((p) => p._id === selectedProject)?.title || "Project Image"}
+                        className="rounded-md shadow-lg transition-opacity duration-500"
+                        width={700}
+                        height={700}
+                        priority
+                        onError={(e) => console.error("❌ Image failed to load:", e)}
+                      />
                     </div>
                   );
                 })()}
