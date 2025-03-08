@@ -11,17 +11,15 @@ function setCorsHeaders(response: NextResponse) {
 }
 
 // **GET: Fetch a blog by ID**
-export async function GET(req: NextRequest, context: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     await connectToDatabase();
-    
-    const { id } = context.params;
 
-    if (!id) {
+    if (!params.id) {
       return NextResponse.json({ message: "Blog ID is required" }, { status: 400 });
     }
 
-    const blog = await Blog.findById(id);
+    const blog = await Blog.findById(params.id);
 
     if (!blog) {
       return NextResponse.json({ message: "Blog not found" }, { status: 404 });
