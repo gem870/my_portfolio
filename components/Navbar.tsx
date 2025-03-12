@@ -100,7 +100,7 @@ export const Navbar = () => {
               whileTap={{ scale: 0.95 }}
               className="flex w-fit items-center shadow-2xl gap-2 rounded-md px-4 my-2 py-1 bg-gray-900 text-white transition-all"
             >
-              <a href="/resume.pdf" download>Resume</a>
+              <a href="/e_victor_resume.pdf" download>Resume</a>
             </motion.button>
             <div className="mt-2 flex space-x-4 justify-center">
               <Link href="https://github.com/gem870" target="_blank" rel="noopener noreferrer">

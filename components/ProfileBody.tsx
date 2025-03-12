@@ -111,7 +111,7 @@ export const ProfileBody = () => {
           whileTap={{ scale: 0.95 }}
           className="flex w-fit items-center gap-2 rounded-md px-6 my-4 py-3 bg-gray-900 text-white transition-all"
         >
-          <a href="/resume.pdf" download>Download Resume</a>
+          <a href="/e_victor_resume.pdf" download>Download Resume</a>
         </motion.button>
       </div>
     </motion.section>
