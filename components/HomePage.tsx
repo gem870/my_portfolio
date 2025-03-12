@@ -43,7 +43,7 @@ export const HomePage = () => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.6, ease: "easeInOut" }}
-      className="flex flex-col items-center w-full text-white mt-10"
+      className="flex flex-col items-center w-full text-white mt-20"
     >
       {/* Hero Section */}
       <motion.section

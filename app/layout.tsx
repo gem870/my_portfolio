@@ -20,8 +20,9 @@ export const metadata: Metadata = {
   title: "E. Victor portfolio",
   description: "I am Victor, a passionate software developer with a love for crafting efficient, user-friendly, and scalable solutions.",
   icons:{
-    icon: "Emmanuel victor.png",
-    apple: "Emmanuel victor.png"
+    icon: [`/favicon.ico?v=4`],
+    apple: [`/apple-touch-icon.png?v=4`],
+    shortcut: [`/apple-touch-icon.png`]
   }
 };
 
@@ -36,7 +37,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Navbar/>
-        <div className="hidden md:flex h-screen w-full">
+        <div className="hidden md:flex h-screen w-full bg-slate-100">
         {/* Profile + Details Section (Visible only on big screens) */}
         <div className=" flex flex-col items-center justify-center ">
         {/* Profile Section (Left) */}
@@ -45,7 +46,7 @@ export default function RootLayout({
       </div>
 
       {/* Details Section (Right) */}
-      <div className="w-2/3  pt-8 custom-scroll overflow-auto">
+      <div className="w-2/3 custom-scroll overflow-auto">
           {children}
           <Footter/>
         </div>

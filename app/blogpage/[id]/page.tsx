@@ -7,7 +7,7 @@ import hljs from "highlight.js";
 import "highlight.js/styles/github.css"; // Highlight.js theme
 import { motion } from "framer-motion";
 
-const MONGODB_URL = process.env.NEXT_PUBLIC_BACKEND_BLOG_URL as string;
+const MONGODB_URL = process.env.NEXT_PUBLIC_BACKEND_URL as string;
 
 interface Blog {
   id: string;
@@ -123,7 +123,7 @@ export default function BlogPage() {
             Copy
           </button>
 
-          <pre id="codeBlock" className="text-white p-1 rounded-lg overflow-x-auto">
+          <pre id="codeBlock" className="text-white  rounded-lg overflow-x-auto ">
             <code className={`language-${blog?.programmingLanguage || "plaintext"}`}>
               {blog?.code || "Loading content..."}
             </code>

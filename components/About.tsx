@@ -38,7 +38,7 @@ export const AboutPage = () => {
   });
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center text-gray-700 mt-10">
+    <div className="min-h-screen flex flex-col items-center justify-center text-gray-700 mt-16">
       <div className="w-full max-w-3xl p-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}

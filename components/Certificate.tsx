@@ -45,7 +45,7 @@ export const Certificate = () => {
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.4, duration: 0.9 }}
-      className="flex flex-col items-center justify-center text-white px-4 pt-20"
+      className="flex flex-col items-center justify-center text-white px-4 pt-24"
     >
       {/* Section Title */}
       <h2 className="text-3xl font-bold text-[#2df7ad] mb-8 pb-2">

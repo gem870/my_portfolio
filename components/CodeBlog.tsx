@@ -6,7 +6,7 @@ import DOMPurify from "dompurify";
 import Link from "next/link";
 import Image from "next/image";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_BLOG_URL as string;
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL as string;
 
 const COLORS_TOP = ["#13FFAA", "#1E67C6", "#CE84CF", "#DD335C"];
 
@@ -32,8 +32,10 @@ const CodeBlog = () => {
       }
 
       try {
-        console.log("📡 Fetching data from:", `${BACKEND_URL}/api/blogs`);
-        const response = await fetch(`${BACKEND_URL}/api/blogs`);
+        const apiUrl = `${BACKEND_URL}/api/blogs`.replace(/([^:]\/)\/+/g, "$1"); // Prevent double slashes
+        console.log("📡 Fetching data from:", apiUrl);
+        
+        const response = await fetch(apiUrl);
 
         if (!response.ok) {
           const errorText = await response.text();
@@ -73,20 +75,26 @@ const CodeBlog = () => {
     };
   }, [color, borderColor]);
 
-  const isVideo = (url: string) => /\.(mp4|webm|ogg)$/i.test(url);
-  const getMediaUrl = (file: string | undefined) => (file ? `${BACKEND_URL}${file}` : "");
+  const isVideo = (url: string) => /\.(mp4|webm|ogg|mov|avi|mkv)$/i.test(url);
+
+  const getMediaUrl = (file: string | undefined) => {
+    if (!file) return "";
+    const url = `${BACKEND_URL}/${file}`.replace(/([^:]\/)\/+/g, "$1");
+    console.log("📸 Media URL:", url);
+    return url;
+  };
 
   return (
     <motion.section
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.4, duration: 0.9 }}
-      className="pb-[12%] text-[#2df7ad] pt-12"
+      className="text-[#2df7ad] h-screen"
     >
-      <div className="mx-auto shadow-xl">
-        <motion.section id="portfolio" className="pt-14 text-[#10c2aa]">
-          <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-8">
-            <div className="px-2">
+      <div className="mx-auto shadow-xl h-full">
+        <motion.section id="portfolio" className="text-[#10c2aa] h-full">
+          <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-8 h-full">
+            <div className="px-2 custom-scroll overflow-y-auto pt-20">
               <h2 className="text-5xl font-bold">
                 Code<span className="text-gray-500"> Blog</span>
               </h2>
@@ -129,7 +137,7 @@ const CodeBlog = () => {
                       <Link href={`/blogpage/${project._id}`}>
                         <motion.button
                           style={{
-                            border: `2px solid`,
+                            border: `0.5px solid`,
                             borderColor: borderColor,
                             boxShadow: "0px 4px 10px rgba(255, 255, 255, 0.3)",
                           }}
@@ -137,7 +145,7 @@ const CodeBlog = () => {
                           whileTap={{ scale: 0.95 }}
                           className="flex w-fit items-center bg-gray-200 shadow-2xl p-1 gap-2 rounded-md my-4 ml-2 text-[#22ac99] transition-all"
                         >
-                          Review
+                          Review code
                         </motion.button>
                       </Link>
                     </motion.div>
@@ -152,7 +160,7 @@ const CodeBlog = () => {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, ease: "easeOut" }}
-                className="flex h-[40%]"
+                className="flex h-[40%] lg:pt-24"
               >
                 {(() => {
                   const selectedMedia = projects.find((p) => p._id === selectedProject)?.file;
@@ -160,30 +168,24 @@ const CodeBlog = () => {
 
                   if (!selectedMedia) {
                     return (
-                      <div>
-                        <div className="flex items-center justify-center text-gray-500 shadow-lg rounded-md p-4">
-                          No media available for this blog.
-                        </div>
+                      <div className="flex items-center justify-center text-gray-500 shadow-lg rounded-md p-4">
+                        No media available for this blog.
                       </div>
                     );
                   }
 
                   return isVideo(selectedMedia) ? (
-                    <video
-                      src={mediaUrl}
-                      controls
-                      className="rounded-md shadow-lg transition-opacity duration-500 w-full h-auto"
-                      onError={(e) => console.error("❌ Video failed to load:", e)}
-                    />
+                    <div>
+                      <video src={getMediaUrl(selectedMedia)} controls className="rounded-md shadow-lg transition-opacity duration-500 w-full h-auto py-6" />
+                    </div>
                   ) : (
                     <div>
                       <Image
                         src={mediaUrl}
-                        alt={projects.find((p) => p._id === selectedProject)?.title || "Project Image"}
-                        className="rounded-md shadow-lg transition-opacity duration-500"
+                        alt="Project Image"
                         width={700}
                         height={700}
-                        priority
+                        className="rounded-md shadow-lg object-cover"
                         onError={(e) => console.error("❌ Image failed to load:", e)}
                       />
                     </div>
