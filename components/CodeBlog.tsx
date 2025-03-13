@@ -32,7 +32,7 @@ const CodeBlog = () => {
       }
 
       try {
-        const apiUrl = `${BACKEND_URL}/api/blogs`.replace(/([^:]\/)\/+/g, "$1"); // Prevent double slashes
+        const apiUrl = `${BACKEND_URL}/api/blogs`.replace(/([^:]\/)\/+/g, "$1");
         console.log("📡 Fetching data from:", apiUrl);
         
         const response = await fetch(apiUrl);
@@ -75,13 +75,10 @@ const CodeBlog = () => {
     };
   }, [color, borderColor]);
 
-  const isVideo = (url: string) => /\.(mp4|webm|ogg|mov|avi|mkv)$/i.test(url);
-
-  const getMediaUrl = (file: string | undefined) => {
+  // 🔥 Fix: Handles both Cloudinary & Local Uploads
+  const getMediaUrl = (file?: string) => {
     if (!file) return "";
-    const url = `${BACKEND_URL}/${file}`.replace(/([^:]\/)\/+/g, "$1");
-    console.log("📸 Media URL:", url);
-    return url;
+    return file.startsWith("http") ? file : `${BACKEND_URL}/${file}`;
   };
 
   return (
@@ -91,10 +88,10 @@ const CodeBlog = () => {
       transition={{ delay: 0.4, duration: 0.9 }}
       className="text-[#2df7ad] h-screen"
     >
-      <div className="mx-auto shadow-xl h-full">
+      <div className="mx-auto shadow-md h-full">
         <motion.section id="portfolio" className="text-[#10c2aa] h-full">
           <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-8 h-full">
-            <div className="px-2 custom-scroll overflow-y-auto pt-20">
+            <div className="px-2 custom-scroll overflow-y-auto pt-20 pb-6 ">
               <h2 className="text-5xl font-bold">
                 Code<span className="text-gray-500"> Blog</span>
               </h2>
@@ -174,20 +171,25 @@ const CodeBlog = () => {
                     );
                   }
 
-                  return isVideo(selectedMedia) ? (
-                    <div>
-                      <video src={getMediaUrl(selectedMedia)} controls className="rounded-md shadow-lg transition-opacity duration-500 w-full h-auto py-6" />
+                  return /\.(mp4|webm|ogg|mov|avi|mkv)$/i.test(selectedMedia) ? (
+                    <div className="rounded-md ">
+                      <video 
+                      src={mediaUrl} 
+                      controls 
+                      className="rounded-md shadow-lg transition-opacity duration-500 w-full h-auto  object-cover pb-6" 
+                      style={{ width: "100%", height: "auto" }}
+                    />
                     </div>
                   ) : (
                     <div>
                       <Image
-                        src={mediaUrl}
-                        alt="Project Image"
-                        width={700}
-                        height={700}
-                        className="rounded-md shadow-lg object-cover"
-                        onError={(e) => console.error("❌ Image failed to load:", e)}
-                      />
+                      src={mediaUrl}
+                      alt="Project Image"
+                      width={700}
+                      height={700}
+                      className="rounded-md shadow-lg object-cover"
+                      onError={() => console.error("❌ Image failed to load:", mediaUrl)}
+                    />
                     </div>
                   );
                 })()}
